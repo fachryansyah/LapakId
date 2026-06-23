@@ -18,7 +18,9 @@ Detailnya sebagai berikut:
 
 # LapakId
 
-LapakId adalah aplikasi E-commerce web top up berbasis PHP untuk menampilkan katalog produk digital seperti game, pulsa, token PLN, dan paket data. Proyek ini menyediakan halaman publik untuk melihat produk serta panel admin untuk mengelola produk dan memantau transaksi.
+LapakId adalah platform E-commerce berbasis PHP yang dirancang khusus untuk menjual berbagai macam **akun digital**. Melalui web ini, Anda dapat menyediakan katalog produk seperti akun game, akun layanan streaming (Netflix, Spotify, dll), hingga akun layanan AI dan produktivitas (ChatGPT, Canva, dll). Semua hal yang berkaitan dengan akun digital dapat dijual melalui platform ini.
+
+Proyek ini menyediakan halaman publik bagi pelanggan untuk menelusuri dan membeli produk, serta panel admin yang lengkap untuk mengelola katalog akun dan memantau setiap transaksi.
 
 ## Fitur Utama
 
