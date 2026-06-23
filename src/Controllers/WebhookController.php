@@ -195,7 +195,7 @@ class WebhookController extends Controller
         $plainBody .= "Jika ada kendala, silakan hubungi kami.\n";
 
         $emailId = Env::get('MAILRY_EMAIL_ID');
-        $secretToken = Env::get('MAILRY_SECRET_TOKEN');
+        $secretToken = Env::get('MAILRY_API_KEY');
 
         if (!$emailId || !$secretToken) {
             return ['success' => false, 'message' => 'Mailry configuration is missing.'];
