@@ -161,10 +161,12 @@ class CheckoutController extends Controller
     {
         try {
             $transaction = $this->db()->selectOne(
-                "SELECT t.*, p.item_name, c.name AS category_name "
+                "SELECT t.*, p.item_name, c.name AS category_name, ti.product_item_id, pi.account_data "
                 . "FROM transactions t "
                 . "JOIN products p ON p.id = t.product_id "
                 . "JOIN categories c ON c.id = p.category_id "
+                . "LEFT JOIN transaction_items ti ON ti.transaction_id = t.id "
+                . "LEFT JOIN product_items pi ON pi.id = ti.product_item_id "
                 . "WHERE t.invoice_code = :invoice_code",
                 ['invoice_code' => $invoiceCode]
             );

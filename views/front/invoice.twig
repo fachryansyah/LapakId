@@ -52,6 +52,27 @@
             </div>
         </div>
 
+        {% if transaction.status == 'Paid' and transaction.account_data %}
+            {% set account = transaction.account_data|json_decode %}
+            <div class="bg-white rounded-xl p-6 mb-8 border border-emerald-200 text-left shadow-sm">
+                <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Detail Akun / Pesanan
+                </h2>
+                <div class="bg-emerald-50 rounded-lg p-4 mb-4 border border-emerald-100">
+                    <p class="text-sm text-emerald-700 mb-2">Terima kasih atas pembayaran Anda! Berikut adalah detail pesanan Anda:</p>
+                    <div class="space-y-2 mt-4">
+                        {% for key, value in account %}
+                            <div class="grid grid-cols-3 text-sm">
+                                <div class="text-slate-500 font-medium capitalize">{{ key }}</div>
+                                <div class="col-span-2 text-slate-800 font-mono">{{ value }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
         {% if transaction.status == 'Pending' and transaction.qris_code %}
             <div class="bg-white rounded-xl p-6 mb-8 border border-slate-200 text-center shadow-sm">
                 <h2 class="text-lg font-bold text-slate-800 mb-4">Scan QRIS untuk Membayar</h2>
