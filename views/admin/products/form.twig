@@ -1,0 +1,72 @@
+{% extends 'layouts/admin.twig' %}
+
+{% block content %}
+<form action="{{ submitUrl }}" method="POST" class="space-y-6">
+    {% if errors %}
+        <div class="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-800 flex gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div>
+                <p class="font-bold">Mohon perbaiki error validasi berikut:</p>
+                <ul class="mt-2 list-disc space-y-1 pl-5">
+                    {% for error in errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if databaseError %}
+        <div class="rounded-2xl border border-rose-200 bg-rose-50 px-5 py-4 text-sm text-rose-700 flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p>Gagal menyimpan produk. {{ databaseError }}</p>
+        </div>
+    {% endif %}
+
+    <section class="ppob-card bg-white rounded-2xl shadow-sm border border-slate-100 p-6 grid gap-6 lg:grid-cols-2">
+        <div class="lg:col-span-2 border-b border-slate-100 pb-4">
+            <h3 class="text-lg font-bold text-slate-800">Detail Produk</h3>
+            <p class="mt-1 text-sm text-slate-500">Pilih kategori utama dan tentukan nama produk beserta harganya.</p>
+        </div>
+
+        <div class="lg:col-span-2">
+            <label for="category_id" class="mb-2 block text-sm font-semibold text-slate-700">Category</label>
+            <select id="category_id" name="category_id" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20" required>
+                <option value="" disabled {% if not form.category_id %}selected{% endif %}>-- Select a Category --</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}" {% if form.category_id == category.id %}selected{% endif %}>{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="item_name" class="mb-2 block text-sm font-semibold text-slate-700">Nama Produk</label>
+            <input id="item_name" name="item_name" type="text" value="{{ form.item_name }}" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20" placeholder="Example: 86 Diamonds" required>
+        </div>
+
+        <div>
+            <label for="price" class="mb-2 block text-sm font-semibold text-slate-700">Harga</label>
+            <div class="flex w-full overflow-hidden rounded-xl border border-slate-200 bg-slate-50 transition focus-within:border-sky-500 focus-within:ring-2 focus-within:ring-sky-500/20">
+                <span class="inline-flex items-center bg-slate-100 px-4 text-sm text-slate-500">Rp</span>
+                <input id="price" name="price" type="number" min="0" step="0.01" value="{{ form.price }}" class="w-full bg-transparent px-4 py-2.5 text-sm outline-none" placeholder="15000" required>
+            </div>
+        </div>
+    </section>
+
+    <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
+        <a href="/admin/products" class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition-colors">
+            Cancel
+        </a>
+        <button type="submit" class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-xl transition-colors shadow-sm shadow-sky-600/20">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+            </svg>
+            {{ formMode == 'create' ? 'Save Product' : 'Update Product' }}
+        </button>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,139 @@
+{% extends 'layouts/base.twig' %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in">
+    <div class="bg-white rounded-2xl p-8 shadow-sm">
+        
+        <div class="text-center mb-8">
+            <h1 class="text-2xl font-bold text-slate-800">Detail Pesanan</h1>
+            <p class="text-slate-500 mt-2">Simpan kode invoice ini untuk mengecek status pesanan Anda.</p>
+            {% if transaction.status == 'Pending' %}
+            <div class="mt-4 inline-flex justify-center items-center gap-2 text-sm text-slate-500 bg-sky-50 px-4 py-2 rounded-full border border-sky-100">
+                <svg class="animate-spin h-4 w-4 text-sky-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span>Mengecek status otomatis dalam <span id="refresh-countdown" class="font-bold text-sky-600">10</span> detik...</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="bg-slate-50 rounded-xl p-6 mb-8 border border-slate-100">
+            <div class="grid grid-cols-2 gap-y-4 text-sm">
+                <div class="text-slate-500">Invoice</div>
+                <div class="font-bold text-slate-800 text-right">{{ transaction.invoice_code }}</div>
+                
+                <div class="text-slate-500">Produk</div>
+                <div class="font-medium text-slate-800 text-right">{{ transaction.category_name }} - {{ transaction.item_name }}</div>
+
+                <div class="text-slate-500">Tujuan Topup</div>
+                <div class="font-medium text-slate-800 text-right">{{ transaction.customer_no }}</div>
+                
+                <div class="text-slate-500">Tanggal Transaksi</div>
+                <div class="font-medium text-slate-800 text-right">{{ transaction.created_at | date('d M Y, H:i') }}</div>
+                
+                <div class="text-slate-500">Status</div>
+                <div class="text-right">
+                    {% if transaction.status == 'Paid' %}
+                        <span class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-600/20">Berhasil (Paid)</span>
+                    {% elseif transaction.status == 'Pending' %}
+                        <span class="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700 ring-1 ring-inset ring-amber-600/20">Menunggu Pembayaran</span>
+                    {% else %}
+                        <span class="inline-flex items-center rounded-full bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-700 ring-1 ring-inset ring-rose-600/20">{{ transaction.status }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <hr class="my-4 border-slate-200">
+            
+            <div class="flex justify-between items-center text-lg font-bold">
+                <div class="text-slate-800">Total Pembayaran</div>
+                <div class="text-sky-600">Rp {{ transaction.total_price|number_format(0, ',', '.') }}</div>
+            </div>
+        </div>
+
+        {% if transaction.status == 'Pending' and transaction.qris_code %}
+            <div class="bg-white rounded-xl p-6 mb-8 border border-slate-200 text-center shadow-sm">
+                <h2 class="text-lg font-bold text-slate-800 mb-4">Scan QRIS untuk Membayar</h2>
+                <div class="flex justify-center mb-4">
+                    <div id="qris-qrcode" class="p-4 bg-white rounded-xl shadow-sm border border-slate-100 inline-block"></div>
+                </div>
+                <p class="text-sm text-slate-500 mb-6">Gunakan aplikasi M-Banking atau E-Wallet pilihan Anda untuk scan kode QR di atas.</p>
+                
+                <div class="bg-sky-50 rounded-xl p-4 text-left">
+                    <h3 class="text-sm font-semibold text-sky-800 mb-2">Panduan Pembayaran:</h3>
+                    <ol class="list-decimal list-inside text-sm text-sky-700 space-y-1">
+                        <li>Buka aplikasi pembayaran (GoPay, OVO, Dana, M-BCA, dll)</li>
+                        <li>Pilih menu <strong>Scan / Bayar</strong></li>
+                        <li>Arahkan kamera ke kode QR di atas</li>
+                        <li>Pastikan nominal pembayaran sesuai</li>
+                        <li>Masukkan PIN untuk menyelesaikan pembayaran</li>
+                    </ol>
+                </div>
+            </div>
+        {% elseif transaction.status == 'Pending' and not transaction.qris_code %}
+             <div class="text-center p-6 bg-amber-50 rounded-xl border border-amber-200 text-amber-800">
+                <p>Menunggu detail pembayaran dari payment gateway...</p>
+                {% if transaction.checkout_url %}
+                     <a href="{{ transaction.checkout_url }}" target="_blank" class="mt-4 inline-block px-6 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 font-medium">Lanjutkan ke Halaman Pembayaran</a>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <div class="text-center">
+            <a href="/" class="inline-block px-6 py-3 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-colors">
+                Kembali ke Beranda
+            </a>
+        </div>
+        
+    </div>
+</div>
+
+{% if transaction.status == 'Pending' %}
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        {% if transaction.qris_code %}
+        var qrisContent = "{{ transaction.qris_code }}";
+        if (qrisContent) {
+            new QRCode(document.getElementById("qris-qrcode"), {
+                text: qrisContent,
+                width: 256,
+                height: 256,
+                colorDark : "#0f172a", // slate-900
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+        }
+        {% endif %}
+
+        const countdownElement = document.getElementById('refresh-countdown');
+        let countdown = 10;
+
+        // Countdown timer update setiap detik
+        setInterval(function() {
+            countdown--;
+            if (countdown <= 0) {
+                countdown = 10;
+            }
+            if (countdownElement) {
+                countdownElement.textContent = countdown;
+            }
+        }, 1000);
+
+        // Polling status setiap 10 detik
+        setInterval(function() {
+            fetch('/invoice/{{ transaction.invoice_code }}/status')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.status !== 'Pending') {
+                        // Refresh halaman jika status berubah dari Pending
+                        window.location.reload();
+                    }
+                })
+                .catch(error => console.error('Error fetching status:', error));
+        }, 10000);
+    });
+</script>
+{% endif %}
+{% endblock %}

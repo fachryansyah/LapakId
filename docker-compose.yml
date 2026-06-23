@@ -1,0 +1,16 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lapakid-app
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${APP_PORT:-8000}:80"
+    volumes:
+      - app_storage:/var/www/html/public/storage
+
+volumes:
+  app_storage:

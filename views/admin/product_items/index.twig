@@ -1,0 +1,112 @@
+{% extends 'layouts/admin.twig' %}
+
+{% block content %}
+<div class="mb-6 flex items-center justify-between">
+    <div>
+        <a href="/admin/products" class="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors mb-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Kembali ke Produk
+        </a>
+        <h2 class="text-xl font-bold text-slate-800">{{ product.item_name }}</h2>
+        <p class="text-sm text-slate-500 mt-1">Kategori: {{ product.category_name }}</p>
+    </div>
+    <a href="/admin/products/{{ productId }}/items/create" class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-sky-600 rounded-xl hover:bg-sky-700 transition-colors shadow-sm shadow-sky-600/20">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+        </svg>
+        Add Item
+    </a>
+</div>
+
+{% if databaseError %}
+    <div class="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-5 py-4 text-sm text-rose-700 flex items-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <p>Gagal memuat data item produk. {{ databaseError }}</p>
+    </div>
+{% endif %}
+
+<section class="ppob-card bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+    <div class="overflow-x-auto p-4">
+        <table class="min-w-full text-left text-sm">
+            <thead class="text-slate-500 bg-slate-50/80">
+                <tr>
+                    <th class="px-5 py-4 font-semibold rounded-tl-xl rounded-bl-xl">ID / Data</th>
+                    <th class="px-5 py-4 font-semibold">Description</th>
+                    <th class="px-5 py-4 font-semibold">Status</th>
+                    <th class="px-5 py-4 font-semibold">Added At</th>
+                    <th class="px-5 py-4 text-right font-semibold rounded-tr-xl rounded-br-xl">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in productItems %}
+                    <tr class="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors">
+                        <td class="px-5 py-5">
+                            <div class="font-medium text-slate-800 mb-1">#{{ item.id }}</div>
+                            <div class="text-xs text-slate-500 font-mono bg-slate-100 p-2 rounded-lg max-w-[200px] truncate" title="{{ item.account_data }}">
+                                {{ item.account_data }}
+                            </div>
+                        </td>
+                        <td class="px-5 py-5 text-slate-600 max-w-[200px]">
+                            <p class="truncate" title="{{ item.description }}">{{ item.description|default('-') }}</p>
+                        </td>
+                        <td class="px-5 py-5">
+                            {% if item.status == 'available' %}
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span> Available
+                                </span>
+                            {% elseif item.status == 'checking' %}
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5"></span> Checking
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400 mr-1.5"></span> Sold
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-5 py-5 text-slate-500 whitespace-nowrap">
+                            {{ item.created_at|date("d M Y, H:i") }}
+                        </td>
+                        <td class="px-5 py-5">
+                            <div class="flex justify-end gap-2">
+                                <a href="/admin/products/{{ productId }}/items/{{ item.id }}/edit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                    Edit
+                                </a>
+                                <form action="/admin/products/{{ productId }}/items/{{ item.id }}/delete" method="POST" onsubmit="return confirm('Delete this item?');">
+                                    <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-xl transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="px-5 py-12 text-center text-slate-500">
+                            <div class="flex flex-col items-center justify-center">
+                                <div class="p-4 bg-slate-50 rounded-full mb-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                    </svg>
+                                </div>
+                                <p class="font-medium text-slate-700">Belum ada item untuk produk ini</p>
+                                <p class="text-xs mt-1">Tambahkan data akun atau item baru untuk dijual.</p>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

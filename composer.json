@@ -1,0 +1,19 @@
+{
+    "name": "fahri/lapakid",
+    "description": "Web topup",
+    "autoload": {
+        "psr-4": {
+            "Fahri\\LapakId\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Muhammad Fahriansyah",
+            "email": "fachryansyah123@gmail.com"
+        }
+    ],
+    "require": {
+        "phroute/phroute": "^2.2",
+        "twig/twig": "^3.27"
+    }
+}

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 64px auto;
+            padding: 32px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        .meta {
+            margin-top: 24px;
+            padding: 20px;
+            border-radius: 12px;
+            background: #f8fafc;
+        }
+
+        .meta p {
+            margin: 8px 0;
+        }
+
+        .error {
+            color: #b91c1c;
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <h1>{{ title }}</h1>
+        <p>{{ message }}</p>
+        <section class="meta">
+            <p><strong>App Port:</strong> {{ appPort }}</p>
+            <p><strong>Database Status:</strong> {{ databaseStatus }}</p>
+            {% if databaseInfo %}
+                <p><strong>Database Name:</strong> {{ databaseInfo.database_name }}</p>
+                <p><strong>Server Time:</strong> {{ databaseInfo.server_time }}</p>
+                <p><strong>App Name Param:</strong> {{ databaseInfo.app_name }}</p>
+            {% endif %}
+            {% if databaseError %}
+                <p class="error"><strong>Error:</strong> {{ databaseError }}</p>
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+
+# PHP / Composer
+/vendor/
+
+# Node
+/node_modules/
+npm-debug.log*
+
+# macOS
+.DS_Store
+
+# Runtime and uploads
+/public/storage/uploads/

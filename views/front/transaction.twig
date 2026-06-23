@@ -1,0 +1,82 @@
+{% extends "layouts/base.twig" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="px-6 py-8 sm:p-10 border-b border-slate-200">
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 rounded-full bg-sky-100 text-sky-500 flex items-center justify-center text-2xl font-bold">
+                    <i class="fas fa-receipt"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900">Riwayat Transaksi</h1>
+                    <p class="text-sm text-slate-500 mt-1">Daftar transaksi dan pesanan Anda</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="px-6 py-8 sm:p-10">
+            {% if error %}
+            <div class="mb-6 bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl text-sm" role="alert">
+                <span class="block sm:inline">{{ error }}</span>
+            </div>
+            {% endif %}
+
+            <div class="space-y-4">
+                {% for transaction in transactions %}
+                <div class="border border-slate-200 rounded-xl p-6 hover:shadow-md transition-shadow">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                        <div>
+                            <span class="text-xs font-semibold text-slate-500 mb-1 block">{{ transaction.created_at }}</span>
+                            <h3 class="text-lg font-bold text-slate-900">{{ transaction.invoice_code }}</h3>
+                        </div>
+                        <div>
+                            {% if transaction.status == 'Paid' %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                    Berhasil
+                                </span>
+                            {% elseif transaction.status == 'Pending' %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                                    Menunggu Pembayaran
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-rose-100 text-rose-800">
+                                    Dibatalkan
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-4 py-4 border-t border-b border-slate-100 my-4">
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-slate-900">{{ transaction.category_name }} - {{ transaction.item_name }}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-sm text-slate-500">Total Belanja</p>
+                            <p class="text-lg font-bold text-sky-600">Rp {{ transaction.total_price|number_format(0, ',', '.') }}</p>
+                        </div>
+                        <a href="/invoice/{{ transaction.invoice_code }}" class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-sky-600 bg-sky-50 rounded-lg hover:bg-sky-100 transition-colors">
+                            Lihat Invoice
+                        </a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-12">
+                    <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400 text-3xl">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-slate-900 mb-2">Belum ada transaksi</h3>
+                    <p class="text-slate-500 mb-6">Anda belum melakukan transaksi apapun.</p>
+                    <a href="/products" class="inline-flex items-center justify-center px-6 py-3 border border-transparent shadow-sm text-sm font-medium rounded-xl text-white bg-sky-500 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-all">
+                        Mulai Belanja
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
