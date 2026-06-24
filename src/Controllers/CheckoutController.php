@@ -31,7 +31,6 @@ class CheckoutController extends Controller
                 $this->redirectBack();
             }
 
-            // Find the product
             $product = $this->db()->selectOne(
                 "SELECT p.id, p.price, c.name AS category_name "
                 . "FROM products p "
@@ -116,7 +115,6 @@ class CheckoutController extends Controller
                 }
             }
 
-            // Insert into transactions
             $this->db()->execute(
                 "INSERT INTO transactions (user_id, product_id, invoice_code, total_price, status, qris_code) "
                 . "VALUES (:user_id, :product_id, :invoice_code, :total_price, :status, :qris_code)",
@@ -132,7 +130,6 @@ class CheckoutController extends Controller
 
             $transactionId = $this->db()->getConnection()->lastInsertId();
 
-            // Insert into transaction_items
             $this->db()->execute(
                 "INSERT INTO transaction_items (transaction_id, product_item_id, created_at, updated_at) "
                 . "VALUES (:transaction_id, :product_item_id, NOW(), NOW())",
@@ -142,13 +139,11 @@ class CheckoutController extends Controller
                 ]
             );
 
-            // Change item status to checking/sold to reserve it
             $this->db()->execute(
                 "UPDATE product_items SET status = 'checking', updated_at = NOW() WHERE id = :id",
                 ['id' => $productItemId]
             );
 
-            // Redirect to invoice page
             $this->redirect('/invoice/' . $invoiceCode);
 
         } catch (Throwable $e) {
